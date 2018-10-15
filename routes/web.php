@@ -11,16 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return route('match.gaddteam');
+//});
 
-Route::post('/home', [
+Route::post('/', [
     'uses' => 'MatchController@addteam',
     'as' => 'match.addteam'
 ]);
 
-Route::get('/home', [
+Route::get('/', [
     'uses' => 'MatchController@gaddteam',
-    'as' => 'match.addteam'
+    'as' => 'match.gaddteam'
+]);
+
+Route::get('/delete', [
+    'uses' => 'MatchController@clear',
+    'as' => 'clear'
 ]);

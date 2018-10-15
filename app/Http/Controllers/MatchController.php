@@ -13,11 +13,18 @@ class MatchController extends Controller{
 //            'roll' => 'required|unique:users',
 //            'password' => 'required|min:4'
 //        ]);
-        $team1 = $request->input('team1');
-        $team2 = $request->input('team2');
+        $add = 5;
+        $sub = -2;
+        $team1 = trim($request->input('team1'));
+        $team2 = trim($request->input('team2'));
         $team1g = $request->input('team1g');
         $team2g = $request->input('team2g');
-        $winner = $request->input('winner');
+        if($team1g == $team2g)
+            $winner = 0;
+        else if($team1g > $team2g)
+            $winner = 1;
+        else if($team1g < $team2g)
+            $winner = 2;
 
         $team = Team::where('teamname', '=', $team1)->first();
         if ($team === null) {
@@ -28,8 +35,10 @@ class MatchController extends Controller{
             $team->wins = $winner == 1 ? 1 : 0;
             $team->loss = $winner == 2 ? 1 : 0;;
             $team->draws = $winner == 0 ? 1 : 0;;
-            $team->points = $winner == 1 ? 4 : -1;
+            $team->points = $winner == 1 ? $add : $sub;
             $team->goals = $team1g;
+            $team->goalsf = $team1g;
+            $team->goalsa = $team2g;
             $team->save();
         }
         else{
@@ -37,8 +46,10 @@ class MatchController extends Controller{
             $team->wins += $winner == 1 ? 1 : 0;
             $team->loss += $winner == 2 ? 1 : 0;;
             $team->draws += $winner == 0 ? 1 : 0;;
-            $team->points += $winner == 1 ? 4 : -1;
+            $team->points += $winner == 1 ? $add : $sub;
             $team->goals += $team1g;
+            $team->goalsf += $team1g;
+            $team->goalsa += $team2g;
             $team->update();
         }
 
@@ -51,8 +62,10 @@ class MatchController extends Controller{
             $team->wins = $winner == 2 ? 1 : 0;
             $team->loss = $winner == 1 ? 1 : 0;;
             $team->draws = $winner == 0 ? 1 : 0;;
-            $team->points = $winner == 2 ? 4 : -1;
+            $team->points = $winner == 2 ? $add : $sub;
             $team->goals = $team2g;
+            $team->goalsf = $team2g;
+            $team->goalsa = $team1g;
             $team->save();
         }
         else{
@@ -60,8 +73,10 @@ class MatchController extends Controller{
             $team->wins += $winner == 2 ? 1 : 0;
             $team->loss += $winner == 1 ? 1 : 0;;
             $team->draws += $winner == 0 ? 1 : 0;;
-            $team->points += $winner == 2 ? 4 : -1;
+            $team->points += $winner == 2 ? $add : $sub;
             $team->goals += $team2g;
+            $team->goalsf += $team2g;
+            $team->goalsa += $team1g;
             $team->update();
         }
         $match = new Match();
@@ -72,15 +87,20 @@ class MatchController extends Controller{
         $match->team2g = $team2g;
         $match->save();
 //        $tags = Tag::all();
-        $teams = Team::all();
-        $match = Match::all();
-        return view('welcome', ['teams' => $teams, 'matches' => $match]);
-        //return redirect()->route('home.feeds')->with(['message' => $message]);
+        return redirect()->route('match.gaddteam');
 
     }
+
     public function gaddteam(){
         $teams = Team::all();
         $match = Match::all();
-        return view('welcome', ['teams' => $teams, 'matches' => $match]);
+
+        return view('welcome', ['teams' => $teams, 'matches' => $match, 't' => 1, 'm' => 1, 'z' => 0]);
+    }
+
+    public function clear(){
+        $teams = Team::truncate();
+        $match = Match::truncate();
+        return redirect()->route('match.gaddteam');
     }
 }

@@ -22,6 +22,8 @@ class CreateTeamsTable extends Migration
             $table->integer('draws');
             $table->integer('points');
             $table->integer('goals');
+            $table->integer('goalsf');
+            $table->integer('goalsa');
             $table->timestamps();
         });
     }
